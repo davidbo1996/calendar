@@ -1,5 +1,3 @@
-# Getting Started with Create React App
-
 ## `yarn install`
 
 Runs this command to install all dependencies and then
