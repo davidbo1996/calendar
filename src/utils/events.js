@@ -36,6 +36,48 @@ export function checkIfOverlapOrNot(events, selectedEvent) {
   return list.filter((e) => e.isOverlap === true).length > 0 ? true : false;
 }
 
+// TODO algorithm not okay for this moment
+/**
+ *
+ * Get width for differents events
+ *
+ * @param {*} selectedEvent
+ * @param {*} events
+ * @param {*} dispatchEventsInDifferentBlocks
+ * @param {*} widthByBlocks
+ * @returns
+ */
+
+export function getWidth(
+  selectedEvent,
+  events,
+  dispatchEventsInDifferentBlocks,
+  widthByBlocks
+) {
+  let width;
+  let overlappedEventsBySelectedEvent =
+    getListOfOverlappedEventsBySelectedEvent(events, selectedEvent);
+  let countEventsOverlappedBySelectedEvent =
+    overlappedEventsBySelectedEvent.filter((e) => e.isOverlap === true);
+  let countBlocks = dispatchEventsInDifferentBlocks.length;
+
+  let first = getEventsWhichAreNotOverlaped(events);
+  let excludeId = first.map((e) => e.id);
+
+  if (countEventsOverlappedBySelectedEvent.length === 0) {
+    width = selectedEvent.width;
+  } else if (
+    countEventsOverlappedBySelectedEvent.length === 1 &&
+    !_.includes(excludeId, selectedEvent.id)
+  ) {
+    width = widthByBlocks * (countBlocks - 1);
+  } else {
+    width = widthByBlocks;
+  }
+
+  return width;
+}
+
 /**
  * Get list of events who are overlapped with the selectedEvent
  *
