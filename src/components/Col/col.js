@@ -1,7 +1,14 @@
 import _ from "lodash";
-import { test2 } from "../../utils/events";
+import { getListOfOverlappedEventsBySelectedEvent } from "../../utils/events";
+import { getEventsWhichAreNotOverlaped } from "../../utils/events";
 
-function Col({ events, calendarEvents, height, widthByBlocks }) {
+function Col({
+  events,
+  calendarEvents,
+  height,
+  widthByBlocks,
+  dispatchEventsInDifferentBlocks,
+}) {
   let orderedEventsByDate = _.orderBy(events, "startDate", ["asc"]);
 
   return (
@@ -13,20 +20,41 @@ function Col({ events, calendarEvents, height, widthByBlocks }) {
           widthByBlocks={widthByBlocks}
           events={calendarEvents}
           blocks={orderedEventsByDate}
+          dispatchEventsInDifferentBlocks={dispatchEventsInDifferentBlocks}
         />
       ))}
     </div>
   );
 }
 
-function Event({ selectedEvent, events, widthByBlocks }) {
-  let test = test2(events, selectedEvent);
+function Event({
+  selectedEvent,
+  events,
+  widthByBlocks,
+  dispatchEventsInDifferentBlocks,
+}) {
+  let overlappedEventsBySelectedEvent =
+    getListOfOverlappedEventsBySelectedEvent(events, selectedEvent);
   let width;
-  let countTrue = test.filter((e) => e.isOverlap === true);
+  let countEventsOverlappedBySelectedEvent =
+    overlappedEventsBySelectedEvent.filter((e) => e.isOverlap === true);
+  let countBlocks = dispatchEventsInDifferentBlocks.length;
 
-  if (countTrue.length === 1) {
+  let first = getEventsWhichAreNotOverlaped(events);
+  let excludeId = first.map((e) => e.id);
+
+  if (countEventsOverlappedBySelectedEvent.length === 0) {
     width = selectedEvent.width;
-  } else {
+  } else if (
+    countEventsOverlappedBySelectedEvent.length === 1 &&
+    !_.includes(excludeId, selectedEvent.id)
+  ) {
+    width = widthByBlocks * (countBlocks - 1);
+  }
+  // else if (countEventsOverlappedBySelectedEvent.length ===2 && !_.includes()) {
+  //   width = widthByBlocks * (countBlocks - 1);
+  // }
+  else {
     width = widthByBlocks;
   }
 

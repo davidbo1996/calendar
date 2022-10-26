@@ -36,11 +36,23 @@ export function checkIfOverlapOrNot(events, selectedEvent) {
   return list.filter((e) => e.isOverlap === true).length > 0 ? true : false;
 }
 
-export function test2(events, selectedEvent) {
+/**
+ * Get list of events who are overlapped with the selectedEvent
+ *
+ * @param {*} events
+ * @param {*} selectedEvent
+ * @returns list
+ */
+
+export function getListOfOverlappedEventsBySelectedEvent(
+  events,
+  selectedEvent
+) {
   let list = [];
   if (events.length === 0) {
     return false;
   }
+  events = events.filter((e) => e.id !== selectedEvent.id);
   for (let event of events) {
     let isBetweenStartTimeAndEndTime =
       (event.startFloat < selectedEvent.startFloat &&

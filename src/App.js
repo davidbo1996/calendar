@@ -23,10 +23,8 @@ function makeItem(selectedEvent, height, width) {
   const leftPosition = 0;
 
   return {
-    startTime: startTimeFull,
-    endTime: endTimeFull,
-    startDate: startTimeFull.toDate(),
-    endDate: endTimeFull.toDate(),
+    // startDate: startTimeFull.toDate(),
+    // endDate: endTimeFull.toDate(),
     startFloat: parseFloat(startTimeFull.format("HH.mm")).toFixed(2),
     endFloat: parseFloat(endTimeFull.format("HH.mm")).toFixed(2),
     id: selectedEvent.id,
