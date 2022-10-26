@@ -6,16 +6,20 @@ function Row({ events, height, width }) {
   let countEventsDispatchInBlocks = eventsDispatchInBlocks.length;
   let widthByBlocks = Math.round(width / countEventsDispatchInBlocks);
 
+  // console.log(eventsDispatchInBlocks);
   return (
     <div className="flex flex-row">
       {eventsDispatchInBlocks.map((blocks, index) => (
         <Col
           key={index}
+          calendarEvents={events}
           events={blocks}
           numberBlocks={eventsDispatchInBlocks.length}
+          dispatchEventsInDifferentBlocks={eventsDispatchInBlocks}
           height={height}
           width={width}
           widthByBlocks={widthByBlocks}
+          index={index}
         />
       ))}
     </div>

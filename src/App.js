@@ -5,12 +5,13 @@ import { useWindowDimensions } from "./hooks/window.hooks";
 import dayjs from "dayjs";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import Row from "./components/Row/row";
+
 const queryClient = new QueryClient();
 
-function makeItem(event, height, width) {
-  const startTime = new Date("01-01-2017 " + event.start + ":00");
+function makeItem(selectedEvent, height, width) {
+  const startTime = new Date("01-01-2017 " + selectedEvent.start + ":00");
   const startTimeFull = dayjs(startTime);
-  const endTimeFull = dayjs(startTime).add(event.duration, "minute");
+  const endTimeFull = dayjs(startTime).add(selectedEvent.duration, "minute");
   const minutePerHeightPixel = height / (12 * 60);
   const hourPerHeightPixel = Math.round(height / 12);
   const positionTop =
@@ -28,10 +29,10 @@ function makeItem(event, height, width) {
     endDate: endTimeFull.toDate(),
     startFloat: parseFloat(startTimeFull.format("HH.mm")).toFixed(2),
     endFloat: parseFloat(endTimeFull.format("HH.mm")).toFixed(2),
-    id: event.id,
-    key: event.id,
-    height: Math.round(minutePerHeightPixel * event.duration),
-    positionTop: positionTop,
+    id: selectedEvent.id,
+    key: selectedEvent.id,
+    height: Math.round(minutePerHeightPixel * selectedEvent.duration),
+    positionTop: Math.round(positionTop),
     leftPosition: leftPosition,
     width: width,
   };
@@ -49,7 +50,7 @@ function Calendar() {
   const calendarEvents = useCalendarEvents();
   const { height, width } = useWindowDimensions();
   let eventsTransform = calendarEvents.map((calendarEvent) =>
-    makeItem(calendarEvent, height, width)
+    makeItem(calendarEvent, height, width, calendarEvents)
   );
 
   return <Row events={eventsTransform} height={height} width={width} />;

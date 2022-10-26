@@ -1,7 +1,6 @@
 import _, { orderBy } from "lodash";
 
 /**
- *
  * Compare the selected event with other events
  * if startTime or endTime between event.startTime and event.endTime
  *  return object with {isOverlap : true, key: 1}
@@ -14,6 +13,8 @@ import _, { orderBy } from "lodash";
  * @param {*} selectedEvent
  * @returns boolean
  */
+
+// TODO improve algo to check if overlap or not because it's not work well...
 export function checkIfOverlapOrNot(events, selectedEvent) {
   let list = [];
   if (events.length === 0) {
@@ -32,7 +33,30 @@ export function checkIfOverlapOrNot(events, selectedEvent) {
     });
   }
 
-  return list.filter((e) => e.isOverlap === true).length !== 0 ? true : false;
+  return list.filter((e) => e.isOverlap === true).length > 0 ? true : false;
+}
+
+export function test2(events, selectedEvent) {
+  let list = [];
+  if (events.length === 0) {
+    return false;
+  }
+  for (let event of events) {
+    let isBetweenStartTimeAndEndTime =
+      (event.startFloat < selectedEvent.startFloat &&
+        selectedEvent.endFloat < event.endFloat) ||
+      (event.startFloat < selectedEvent.endFloat &&
+        selectedEvent.startFloat < event.endFloat);
+
+    list.push({
+      isOverlap: isBetweenStartTimeAndEndTime,
+      key: event.key,
+    });
+  }
+
+  // console.log("test", list);
+
+  return list;
 }
 
 /**
@@ -43,14 +67,20 @@ export function checkIfOverlapOrNot(events, selectedEvent) {
  * @returns list of events who are not overlapped
  */
 export function getEventsWhichAreNotOverlaped(events) {
-  let list = [];
+  let eventsWhichArenotOverlapped = [];
   for (let index = 0; index < events.length; index++) {
-    let checkIfOverlap = checkIfOverlapOrNot(list, events[index]);
+    let checkIfOverlap = checkIfOverlapOrNot(
+      eventsWhichArenotOverlapped,
+      events[index]
+    );
     if (!checkIfOverlap) {
-      list = _.concat(list, events[index]);
+      eventsWhichArenotOverlapped = _.concat(
+        eventsWhichArenotOverlapped,
+        events[index]
+      );
     }
   }
-  return list;
+  return eventsWhichArenotOverlapped;
 }
 
 /**
@@ -64,16 +94,16 @@ export function dispatchEventsInDifferentBlocks(events) {
   let countEvents = events.length;
   let orderedEventsByKey = orderBy(events, "key");
 
-  let list = [];
-  while (_.sum(list.map((e) => e.length)) < countEvents) {
+  let blocks = [];
+  while (_.sum(blocks.map((e) => e.length)) < countEvents) {
     let filteredEvents = getEventsWhichAreNotOverlaped(orderedEventsByKey);
-    list = _.concat(list, [filteredEvents]);
-    let excludeKeys = filteredEvents.map((event) => event.key);
+    blocks = _.concat(blocks, [filteredEvents]);
+    let eventsAlreadyAdded = filteredEvents.map((event) => event.key);
     let eventsWithoutPreviousOne = orderedEventsByKey.filter(
-      (event) => !excludeKeys.includes(event.key)
+      (event) => !eventsAlreadyAdded.includes(event.key)
     );
     orderedEventsByKey = eventsWithoutPreviousOne;
   }
 
-  return list;
+  return blocks;
 }
